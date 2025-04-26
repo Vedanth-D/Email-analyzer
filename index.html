@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Phishing Email Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-size: 16px;
+      resize: vertical;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e2e6ea;
+      border-left: 5px solid #007bff;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Phishing Email Analyzer</h1>
+  <form id="analyzeForm">
+    <textarea id="email_text" name="email_text" placeholder="Paste email content here..."></textarea>
+    <button type="submit">Analyze</button>
+  </form>
+  <div id="result" class="result"></div>
+
+  <script>
+    document.getElementById('analyzeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const emailText = document.getElementById('email_text').value;
+
+      fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ email_text: emailText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+          <strong>Result:</strong> ${data.result}
+          <br/><ul>${data.details.map(d => `<li>${d}</li>`).join('')}</ul>
+        `;
+      });
+    });
+  </script>
+</body>
+</html>
